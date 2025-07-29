@@ -20,19 +20,20 @@ function getFormattedURI (conf) {
 }
 
 function client (conf, opts) {
-  let url = (opts.mongoUri)
-    ? opts.mongoUri
-    : getFormattedURI(conf)
+  if(conf.mongoUri) {
+    return MongoClient.connect(conf.mongoUri)
+  }
+  let url = getFormattedURI(conf)
 
-  if (conf.socketTimeoutMS && !opts.mongoUri) {
+  if (conf.socketTimeoutMS) {
     url += `&socketTimeoutMS=${conf.socketTimeoutMS}`
   }
 
-  if (conf.rs && !opts.mongoUri) {
+  if (conf.rs) {
     url += `&replicaSet=${conf.rs}`
   }
 
-  if (conf.authSource && !opts.mongoUri) {
+  if (conf.authSource) {
     url += `&authSource=${conf.authSource}`
   }
 
@@ -76,7 +77,7 @@ class MongoFacility extends Base {
       async () => {
         const connConf = _.pick(
           this.conf,
-          ['user', 'password', 'database', 'host', 'port', 'rs', 'maxPoolSize', 'authSource', 'socketTimeoutMS', 'srv']
+          ['mongoUri', 'user', 'password', 'database', 'host', 'port', 'rs', 'maxPoolSize', 'authSource', 'socketTimeoutMS', 'srv']
         )
         this.cli = await client(connConf, this.opts)
         this.db = this.cli.db(this.conf.database)
