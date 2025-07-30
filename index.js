@@ -20,8 +20,9 @@ function getFormattedURI (conf) {
 }
 
 function client (conf, opts) {
-  if(conf.mongoUri) {
-    return MongoClient.connect(conf.mongoUri)
+  const mongoUri = conf.mongoUri || opts.mongoUri
+  if(mongoUri) {
+    return MongoClient.connect(mongoUri)
   }
   let url = getFormattedURI(conf)
 
